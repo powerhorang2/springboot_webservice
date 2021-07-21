@@ -1,8 +1,10 @@
 package com.jojoldu.posts;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.After;
@@ -47,5 +49,24 @@ public class PostsRepositoryTest {
 		Posts posts = postsList.get(0);
 		assertThat(posts.getTitle(), is("테스트 게시글"));
 		assertThat(posts.getContent(), is("테스트 본문"));
+	}
+	
+	@Test
+	public void BaseTimeEntity_등록 () {
+		//given
+		LocalDateTime now = LocalDateTime.now();
+		postsRepository.save(Posts.builder()
+				.title("테스트 게시글")
+				.content("테스트 본문")
+				.author("테스터")
+				.build());
+		
+		//when
+		List<Posts> postsList = postsRepository.findAll();
+		
+		//then
+		Posts posts = postsList.get(0);
+		assertTrue(posts.getCreatedDate().isAfter(now));
+		assertTrue(posts.getModifiedDate().isAfter(now));
 	}
 }
